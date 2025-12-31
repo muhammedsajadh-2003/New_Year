@@ -1,0 +1,123 @@
+.book-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    perspective: 1500px;
+}
+
+.book {
+    position: relative;
+    width: 300px;
+    /* Single page width */
+    height: 400px;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+}
+
+/* 
+   The book works by stacking pages. 
+   When a page flips, it rotates -180deg around the Y axis.
+   The transform origin is the LEFT edge.
+*/
+
+.page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform-origin: left;
+    transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transform-style: preserve-3d;
+    cursor: pointer;
+    background-color: #fff4e6;
+    /* Cream paper */
+    border-radius: 0 10px 10px 0;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1), 0 0 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid #e0c097;
+}
+
+.page.flipped {
+    transform: rotateY(-180deg);
+}
+
+.page .front,
+.page .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.page .back {
+    transform: rotateY(180deg);
+    background-color: #fcefe3;
+    border-radius: 10px 0 0 10px;
+    /* Inverse border radius for back */
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Cover Styling */
+.cover .front {
+    background: var(--secondary);
+    color: var(--primary);
+    border-radius: 0 10px 10px 0;
+    border: 2px solid var(--primary);
+}
+
+.cover h1 {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    text-align: center;
+}
+
+/* Content Styling */
+.page-content p {
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    color: #4a4a4a;
+    text-align: center;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    /* Allow newlines */
+}
+
+.page-number {
+    position: absolute;
+    bottom: 10px;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Controls */
+.controls {
+    margin-top: 50px;
+    gap: 20px;
+    display: flex;
+}
+
+.controls button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    opacity: 0.5;
+}
+
+.controls button:hover:not(:disabled) {
+    opacity: 1;
+}
+
+.controls button:disabled {
+    cursor: not-allowed;
+    background: #555;
+    color: #888;
+    transform: none;
+    box-shadow: none;
+}

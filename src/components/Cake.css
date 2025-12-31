@@ -1,0 +1,337 @@
+.cake-stage {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: none;
+    position: relative;
+    background: radial-gradient(circle, #3e1e28 0%, #0f0f1a 100%);
+    overflow: hidden;
+}
+
+.instruction {
+    position: absolute;
+    top: 15%;
+    font-size: 2rem;
+    font-family: var(--font-heading);
+    color: var(--text-color);
+    text-shadow: 0 0 10px var(--accent);
+    z-index: 10;
+    transition: opacity 0.5s;
+}
+
+.instruction.fade-out {
+    opacity: 0;
+}
+
+.cake-structure {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin-top: 50px;
+}
+
+.plate {
+    width: 360px;
+    height: 120px;
+    background: #e0e0e0;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    background: radial-gradient(ellipse at center, #ffffff 0%, #a0a0a0 100%);
+}
+
+/* 3D Cake CSS Construction */
+.cake-body {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    width: 280px;
+    height: 150px;
+    transform: translateX(-50%);
+    perspective: 1000px;
+}
+
+/* Common Cake Texture */
+.cake-remainder .layer-side,
+.slice-piece .layer-side {
+    background: linear-gradient(to right, #5d4037, #795548, #5d4037);
+    border-radius: 5px;
+}
+
+.cake-remainder .layer-top,
+.slice-piece .layer-top {
+    background: #8d6e63;
+    border-radius: 50%;
+}
+
+/* The Remainder (Pacman shape effectively, simplified as a block with a gap) */
+.cake-remainder {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.cake-remainder .layer-side {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    background: #5d4037;
+    border-radius: 50% 50% 10% 10%;
+    /* Visually create a cylinder side */
+    box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cake-remainder .layer-top {
+    position: absolute;
+    top: 40px;
+    /* Adjust based on height */
+    width: 100%;
+    height: 80px;
+    background: #795548;
+    z-index: 5;
+    border-radius: 50%;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+    /* Frosted Top */
+    background: radial-gradient(circle, #fce4ec 40%, #f8bbd0 100%);
+}
+
+/* The Slice */
+.slice-piece {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 140px;
+    /* Half width */
+    height: 100%;
+    transform-origin: left bottom;
+    z-index: 6;
+    opacity: 0;
+    /* Hidden initially, simplified for "cut" appearing */
+    transition: all 1s ease-out;
+}
+
+/*  Advanced Logic: 
+    Instead of complex 3D clipping, we will use a visual trick.
+    Initially the cake looks whole.
+    When 'cut-action' triggers, we:
+    1. Show a 'slice' overlay
+    2. Move it outwards
+*/
+
+.cake-structure.cut-action .slice-piece {
+    opacity: 1;
+    transform: translateX(40px) translateY(20px) rotate(10deg);
+}
+
+/* Actually, let's make the slice visible but perfectly aligned initially */
+.slice-piece {
+    /* This is finding visual representation tricky in just CSS without huge DOM complexity 
+      Simplifying: We will just move the "whole right side" out?
+      No, let's try a wedge.
+   */
+    display: none;
+    /* Placeholder for complex geometry */
+}
+
+/* REVISED Simple approach for Realistic Cut:
+   Just separate the whole cake down the middle?
+   Or use a pre-made SVG/Image? Use CSS masking.
+*/
+
+.cake-body {
+    background: transparent;
+}
+
+.cake-whole {
+    /* Define the whole cake look here if not split */
+}
+
+/* Let's redefine Cake Body to simply be a Cylinder that SPLITS */
+.cake-left,
+.cake-right {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    bottom: 0;
+    background: #5d4037;
+    transition: transform 1.5s ease-out;
+}
+
+.cake-left {
+    left: 0;
+    border-radius: 70px 0 0 70px;
+    /* Left semi-circle */
+    background: linear-gradient(to right, #4e342e, #5d4037);
+}
+
+.cake-right {
+    right: 0;
+    border-radius: 0 70px 70px 0;
+    /* Right semi-circle */
+    background: linear-gradient(to right, #5d4037, #4e342e);
+}
+
+/* Top faces */
+.cake-left::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    width: 100%;
+    height: 40px;
+    background: #f8bbd0;
+    /* Pink frosting */
+    border-radius: 70px 0 0 70px;
+}
+
+.cake-right::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    width: 100%;
+    height: 40px;
+    background: #f8bbd0;
+    border-radius: 0 70px 70px 0;
+}
+
+/* Inner Layers (sponge) visible on cut */
+.cake-left::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: repeating-linear-gradient(#f4c2c2, #f4c2c2 10px, #5d4037 10px, #5d4037 30px);
+    transition: width 1s;
+}
+
+.cake-right::after {
+    content: '';
+    position: absolute;
+    left: 0; // Fixed from right
+    top: 0; // Fixed from right
+    width: 0;
+    height: 100%;
+    background: repeating-linear-gradient(#f4c2c2, #f4c2c2 10px, #5d4037 10px, #5d4037 30px);
+    transition: width 1s;
+}
+
+/* Animations upon cut */
+.cake-structure.cut-action .cake-body .cake-left {
+    transform: rotate(-10deg) translateX(-40px);
+}
+
+.cake-structure.cut-action .cake-body .cake-right {
+    transform: rotate(10deg) translateX(40px);
+}
+
+.cake-structure.cut-action .cake-left::after,
+.cake-structure.cut-action .cake-right::after {
+    width: 20px;
+    /* Reveal inner cake */
+}
+
+/* Toppings */
+.toppings {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    text-align: center;
+    z-index: 20;
+    transition: transform 1.5s;
+}
+
+.cake-structure.cut-action .toppings {
+    transform: translateX(-50%) translateY(50px) scale(0.8);
+    opacity: 0;
+    /* Hide 2026/Candle as cake splits */
+}
+
+/* Redefine structure for split approach */
+.cake-body {
+    display: flex;
+    justify-content: center;
+    width: 280px;
+    height: 120px;
+}
+
+.text-decoration {
+    font-size: 2rem;
+    color: var(--secondary);
+    font-weight: bold;
+    margin-top: -30px;
+}
+
+/* Candle */
+.candle {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 50px;
+    background: repeating-linear-gradient(45deg, #fff, #fff 5px, var(--accent) 5px, var(--accent) 10px);
+    z-index: 25;
+}
+
+.flame {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 20px;
+    background: radial-gradient(circle, #fff, #ffeb3b, #ff9800);
+    border-radius: 50% 50% 20% 20%;
+    animation: flicker 0.1s infinite alternate;
+}
+
+@keyframes flicker {
+    from {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(-50%) scale(0.9);
+        opacity: 0.9;
+    }
+}
+
+/* Knife */
+.knife {
+    position: absolute;
+    font-size: 4rem;
+    pointer-events: none;
+    z-index: 100;
+    transition: transform 0.1s;
+}
+
+.knife.cutting {
+    animation: cutMotion 1s forwards;
+}
+
+@keyframes cutMotion {
+    0% {
+        transform: translateY(0) rotate(0);
+    }
+
+    50% {
+        transform: translateY(50px) rotate(-10deg);
+    }
+
+    100% {
+        transform: translateY(150px) rotate(0);
+        opacity: 0;
+    }
+}
